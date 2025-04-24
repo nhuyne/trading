@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Crypto Ticker Enhanced</title>
+  <title>Crypto Ticker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
@@ -12,29 +12,39 @@
     }
 
     .ticker-wrap {
+      overflow: hidden;
+      height: 70px;
       background: #0e1117;
       border-top: 1px solid #1f2630;
       border-bottom: 1px solid #1f2630;
-      overflow: hidden;
-      height: 70px;
       padding: 10px 0;
-      position: relative;
     }
 
     .ticker {
       display: flex;
-      white-space: nowrap;
-      will-change: transform;
-      animation: tickerScroll 25s linear infinite;
+      width: fit-content;
+      animation: scroll-left 25s linear infinite;
     }
 
     .ticker-item {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      padding: 0 30px;
+      padding: 0 20px;
       color: white;
       font-size: 16px;
-      min-width: max-content;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .ticker-item::after {
+      content: '|';
+      color: #444;
+      margin-left: 20px;
+      margin-right: 0;
+    }
+
+    .ticker-item:last-child::after {
+      content: '';
     }
 
     .symbol {
@@ -57,12 +67,16 @@
       margin-right: 8px;
     }
 
-    @keyframes tickerScroll {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-33.33%); }
+    @keyframes scroll-left {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
     }
 
-    /* Màu riêng cho từng coin */
+    /* Color tags for coins */
     .BTC { color: #f7931a; }
     .ETH { color: #3c3c3d; }
     .BNB { color: #f3ba2f; }
@@ -83,9 +97,7 @@
 <body>
 
 <div class="ticker-wrap">
-  <div class="ticker" id="ticker">
-    <!-- Ticker items render bằng JS -->
-  </div>
+  <div class="ticker" id="ticker"></div>
 </div>
 
 <script>
@@ -117,9 +129,8 @@
   }
 
   function renderTicker() {
-    const fullList = symbols.map(s => createTickerItem(s)).join('');
-    // Lặp 4 lần để đảm bảo độ dài vượt đủ màn hình → loop mượt
-    tickerContainer.innerHTML = fullList + fullList + fullList + fullList;
+    const list = symbols.map(s => createTickerItem(s)).join('');
+    tickerContainer.innerHTML = list + list; // nhân đôi để loop mượt
   }
 
   async function fetchPrices() {
@@ -141,7 +152,7 @@
         }
       });
     } catch (err) {
-      console.error('Lỗi lấy giá:', err);
+      console.error('Error fetching prices:', err);
     }
   }
 
