@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Crypto Ticker Tape</title>
+  <title>Smooth Crypto Ticker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
@@ -16,22 +16,25 @@
       border-top: 1px solid #1f2630;
       border-bottom: 1px solid #1f2630;
       overflow: hidden;
-      height: 50px;
+      height: 60px;
+      padding: 10px 0;
       position: relative;
     }
 
     .ticker {
       display: flex;
       white-space: nowrap;
-      animation: tickerScroll 30s linear infinite;
+      will-change: transform;
+      animation: tickerScroll 40s linear infinite;
     }
 
     .ticker-item {
       display: inline-flex;
       align-items: center;
-      padding: 0 25px;
+      padding: 0 30px;
       color: #e6e6e6;
       font-size: 16px;
+      min-width: max-content;
     }
 
     .symbol {
@@ -41,11 +44,11 @@
     }
 
     .price.up {
-      color: #00c853;
+      color: #00e676;
     }
 
     .price.down {
-      color: #ff3d00;
+      color: #ff1744;
     }
 
     @keyframes tickerScroll {
@@ -58,7 +61,7 @@
 
 <div class="ticker-wrap">
   <div class="ticker" id="ticker">
-    <!-- Nội dung sẽ render bằng JS -->
+    <!-- Render nhiều lần để tạo loop mượt -->
   </div>
 </div>
 
@@ -80,8 +83,9 @@
   }
 
   function renderTicker() {
-    const itemsHTML = symbols.map(s => createTickerItem(s)).join('');
-    tickerContainer.innerHTML = itemsHTML + itemsHTML; // Lặp đôi để chạy vô hạn
+    const fullList = symbols.map(s => createTickerItem(s)).join('');
+    // Render 3 vòng lặp để tạo băng dài mượt hơn màn hình
+    tickerContainer.innerHTML = fullList + fullList + fullList;
   }
 
   async function fetchPrices() {
@@ -103,7 +107,7 @@
         }
       });
     } catch (err) {
-      console.error('Lỗi khi lấy giá từ Binance:', err);
+      console.error('Lỗi khi lấy giá:', err);
     }
   }
 
