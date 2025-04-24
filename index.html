@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Smooth Crypto Ticker</title>
+  <title>Crypto Ticker Enhanced</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
@@ -16,7 +16,7 @@
       border-top: 1px solid #1f2630;
       border-bottom: 1px solid #1f2630;
       overflow: hidden;
-      height: 60px;
+      height: 70px;
       padding: 10px 0;
       position: relative;
     }
@@ -25,22 +25,21 @@
       display: flex;
       white-space: nowrap;
       will-change: transform;
-      animation: tickerScroll 40s linear infinite;
+      animation: tickerScroll 25s linear infinite;
     }
 
     .ticker-item {
       display: inline-flex;
       align-items: center;
       padding: 0 30px;
-      color: #e6e6e6;
+      color: white;
       font-size: 16px;
       min-width: max-content;
     }
 
     .symbol {
       font-weight: bold;
-      color: #f0b90b;
-      margin-right: 8px;
+      margin-right: 6px;
     }
 
     .price.up {
@@ -51,17 +50,41 @@
       color: #ff1744;
     }
 
+    .logo {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
     @keyframes tickerScroll {
       0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
+      100% { transform: translateX(-33.33%); }
     }
+
+    /* Màu riêng cho từng coin */
+    .BTC { color: #f7931a; }
+    .ETH { color: #3c3c3d; }
+    .BNB { color: #f3ba2f; }
+    .SOL { color: #66f9a1; }
+    .DOGE { color: #c2a633; }
+    .XRP { color: #25a3e1; }
+    .ADA { color: #0033ad; }
+    .MATIC { color: #8247e5; }
+    .AVAX { color: #e84142; }
+    .SHIB { color: #f46363; }
+    .LTC { color: #bebebe; }
+    .DOT { color: #e6007a; }
+    .TRX { color: #ef0027; }
+    .UNI { color: #ff007a; }
+    .LINK { color: #2a5ada; }
   </style>
 </head>
 <body>
 
 <div class="ticker-wrap">
   <div class="ticker" id="ticker">
-    <!-- Render nhiều lần để tạo loop mượt -->
+    <!-- Ticker items render bằng JS -->
   </div>
 </div>
 
@@ -74,18 +97,29 @@
 
   const tickerContainer = document.getElementById('ticker');
 
+  function getLogo(symbol) {
+    const coin = symbol.replace('USDT', '').toLowerCase();
+    return `https://cryptoicon-api.pages.dev/api/icon/${coin}`;
+  }
+
+  function getCoinClass(symbol) {
+    return symbol.replace('USDT', '');
+  }
+
   function createTickerItem(symbol, price = '...') {
+    const coin = symbol.replace('USDT', '');
     return `
-      <div class="ticker-item">
-        <span class="symbol">${symbol.replace('USDT', '/USDT')}</span>
+      <div class="ticker-item ${coin}">
+        <img class="logo" src="${getLogo(symbol)}" alt="${coin}" onerror="this.style.display='none'"/>
+        <span class="symbol ${getCoinClass(symbol)}">${coin}/USDT</span>
         <span class="price" id="price-${symbol}">${price}</span>
       </div>`;
   }
 
   function renderTicker() {
     const fullList = symbols.map(s => createTickerItem(s)).join('');
-    // Render 3 vòng lặp để tạo băng dài mượt hơn màn hình
-    tickerContainer.innerHTML = fullList + fullList + fullList;
+    // Lặp 4 lần để đảm bảo độ dài vượt đủ màn hình → loop mượt
+    tickerContainer.innerHTML = fullList + fullList + fullList + fullList;
   }
 
   async function fetchPrices() {
@@ -107,7 +141,7 @@
         }
       });
     } catch (err) {
-      console.error('Lỗi khi lấy giá:', err);
+      console.error('Lỗi lấy giá:', err);
     }
   }
 
