@@ -2,51 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>Crypto Ticker Tape</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Custom Ticker Tape</title>
   <style>
     body {
       margin: 0;
-      background-color: #131722;
-      color: white;
-      font-family: Arial, sans-serif;
+      background-color: #0e1117;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .ticker-wrap {
-      width: 100%;
+      background: #0e1117;
+      border-top: 1px solid #1f2630;
+      border-bottom: 1px solid #1f2630;
       overflow: hidden;
-      background: #131722;
-      border-top: 1px solid #333;
-      border-bottom: 1px solid #333;
-      height: 48px;
+      height: 50px;
       position: relative;
     }
 
     .ticker {
-      display: inline-block;
+      display: flex;
       white-space: nowrap;
-      animation: tickerScroll 20s linear infinite;
+      animation: tickerScroll 30s linear infinite;
     }
 
     .ticker-item {
-      display: inline-block;
-      padding: 0 30px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 25px;
+      color: #e6e6e6;
       font-size: 16px;
-      color: #ffffff;
     }
 
-    .ticker-symbol {
+    .symbol {
       font-weight: bold;
       color: #f0b90b;
+      margin-right: 8px;
+    }
+
+    .price.up {
+      color: #00c853;
+    }
+
+    .price.down {
+      color: #ff3d00;
     }
 
     @keyframes tickerScroll {
-      0% {
-        transform: translateX(100%);
-      }
-      100% {
-        transform: translateX(-100%);
-      }
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
     }
   </style>
 </head>
@@ -54,15 +58,56 @@
 
 <div class="ticker-wrap">
   <div class="ticker" id="ticker">
-    <div class="ticker-item"><span class="ticker-symbol">AAPL</span>: $165.32</div>
-    <div class="ticker-item"><span class="ticker-symbol">TSLA</span>: $245.10</div>
-    <div class="ticker-item"><span class="ticker-symbol">NVDA</span>: $785.22</div>
-    <div class="ticker-item"><span class="ticker-symbol">AMZN</span>: $135.44</div>
-    <div class="ticker-item"><span class="ticker-symbol">BTC/USDT</span>: $64,500</div>
-    <div class="ticker-item"><span class="ticker-symbol">ETH/USDT</span>: $3,150</div>
-    <!-- Thêm nữa nếu muốn -->
+    <!-- Nội dung sẽ được JS render -->
   </div>
 </div>
+
+<script>
+  const symbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'DOGEUSDT'];
+  const tickerContainer = document.getElementById('ticker');
+  const prices = {};
+
+  function createTickerItem(symbol, price) {
+    return `
+      <div class="ticker-item">
+        <span class="symbol">${symbol.replace('USDT', '/USDT')}</span>
+        <span class="price" id="price-${symbol}">${price}</span>
+      </div>`;
+  }
+
+  async function fetchPrices() {
+    try {
+      const res = await fetch('https://api.binance.com/api/v3/ticker/price');
+      const data = await res.json();
+      symbols.forEach(symbol => {
+        const found = data.find(t => t.symbol === symbol);
+        if (found) {
+          const el = document.getElementById(`price-${symbol}`);
+          const newPrice = parseFloat(found.price).toFixed(2);
+          if (el) {
+            const oldPrice = parseFloat(el.innerText);
+            el.innerText = newPrice;
+            el.classList.remove('up', 'down');
+            if (!isNaN(oldPrice)) {
+              el.classList.add(newPrice > oldPrice ? 'up' : newPrice < oldPrice ? 'down' : '');
+            }
+          }
+        }
+      });
+    } catch (err) {
+      console.error('Lỗi khi lấy giá từ Binance:', err);
+    }
+  }
+
+  function init() {
+    // Khởi tạo UI ban đầu
+    tickerContainer.innerHTML = symbols.map(s => createTickerItem(s, '...')).join('');
+    fetchPrices(); // Lấy giá lần đầu
+    setInterval(fetchPrices, 5000); // Cập nhật mỗi 5 giây
+  }
+
+  init();
+</script>
 
 </body>
 </html>
