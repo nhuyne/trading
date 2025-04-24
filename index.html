@@ -49,8 +49,8 @@
     }
 
     @keyframes tickerScroll {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
   </style>
 </head>
@@ -58,21 +58,30 @@
 
 <div class="ticker-wrap">
   <div class="ticker" id="ticker">
-    <!-- Nội dung sẽ được JS render -->
+    <!-- Nội dung sẽ render bằng JS -->
   </div>
 </div>
 
 <script>
-  const symbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'DOGEUSDT'];
-  const tickerContainer = document.getElementById('ticker');
-  const prices = {};
+  const symbols = [
+    'BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'DOGEUSDT',
+    'XRPUSDT', 'ADAUSDT', 'MATICUSDT', 'AVAXUSDT', 'SHIBUSDT',
+    'LTCUSDT', 'DOTUSDT', 'TRXUSDT', 'UNIUSDT', 'LINKUSDT'
+  ];
 
-  function createTickerItem(symbol, price) {
+  const tickerContainer = document.getElementById('ticker');
+
+  function createTickerItem(symbol, price = '...') {
     return `
       <div class="ticker-item">
         <span class="symbol">${symbol.replace('USDT', '/USDT')}</span>
         <span class="price" id="price-${symbol}">${price}</span>
       </div>`;
+  }
+
+  function renderTicker() {
+    const itemsHTML = symbols.map(s => createTickerItem(s)).join('');
+    tickerContainer.innerHTML = itemsHTML + itemsHTML; // Lặp đôi để chạy vô hạn
   }
 
   async function fetchPrices() {
@@ -82,16 +91,15 @@
       symbols.forEach(symbol => {
         const found = data.find(t => t.symbol === symbol);
         if (found) {
-          const el = document.getElementById(`price-${symbol}`);
           const newPrice = parseFloat(found.price).toFixed(2);
-          if (el) {
+          document.querySelectorAll(`#price-${symbol}`).forEach(el => {
             const oldPrice = parseFloat(el.innerText);
             el.innerText = newPrice;
             el.classList.remove('up', 'down');
             if (!isNaN(oldPrice)) {
               el.classList.add(newPrice > oldPrice ? 'up' : newPrice < oldPrice ? 'down' : '');
             }
-          }
+          });
         }
       });
     } catch (err) {
@@ -100,10 +108,9 @@
   }
 
   function init() {
-    // Khởi tạo UI ban đầu
-    tickerContainer.innerHTML = symbols.map(s => createTickerItem(s, '...')).join('');
-    fetchPrices(); // Lấy giá lần đầu
-    setInterval(fetchPrices, 5000); // Cập nhật mỗi 5 giây
+    renderTicker();
+    fetchPrices();
+    setInterval(fetchPrices, 5000);
   }
 
   init();
