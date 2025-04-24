@@ -3,56 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TradingView Ticker Tape</title>
+  <title>Custom Ticker Tape</title>
   <style>
     body {
-      background-color: #131722;
       margin: 0;
-      padding: 0;
+      background-color: #131722;
+      color: white;
+      font-family: Arial, sans-serif;
     }
-    .tradingview-widget-container {
+
+    .ticker-wrap {
       width: 100%;
-      height: auto;
+      overflow: hidden;
+      background: #131722;
+      border-top: 1px solid #333;
+      border-bottom: 1px solid #333;
+      height: 48px;
+      position: relative;
     }
-    .tradingview-widget-container__widget {
-      width: 100%;
-      height: 100%;
+
+    .ticker {
+      display: inline-block;
+      white-space: nowrap;
+      animation: tickerScroll 20s linear infinite;
     }
-    .tradingview-widget-copyright {
-      font-size: 13px;
-      line-height: 32px;
-      text-align: center;
-      font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif;
-      color: #B2B5BE;
+
+    .ticker-item {
+      display: inline-block;
+      padding: 0 30px;
+      font-size: 16px;
+      color: #ffffff;
     }
-    .tradingview-widget-copyright .blue-text {
-      color: #2962FF;
+
+    .ticker-symbol {
+      font-weight: bold;
+      color: #f0b90b;
     }
-    .tradingview-widget-copyright a {
-      text-decoration: none;
-      color: #B2B5BE;
-    }
-    .tradingview-widget-copyright a:hover .blue-text {
-      color: #1E53E5;
-    }
-    .tradingview-widget-copyright a:active .blue-text {
-      color: #1848CC;
+
+    @keyframes tickerScroll {
+      0% {
+        transform: translateX(100%);
+      }
+      100% {
+        transform: translateX(-100%);
+      }
     }
   </style>
 </head>
 <body>
-  <div class="tradingview-widget-container">
-    <div class="tradingview-widget-container__widget">
-      <iframe src="https://s.tradingview.com/embed-widget/ticker-tape/?locale=en&symbols=%5BNASDAQ%3AAAPL%2CNASDAQ%3ATSLA%2CNASDAQ%3ANVDA%2CNASDAQ%3AAMZN%2CBINANCE%3ABTCUSDT%2CBINANCE%3AETHUSDT%5D&showSymbolLogo=true&isTransparent=false&displayMode=regular&colorTheme=dark"
-              frameborder="0" allowtransparency="true" scrolling="no" width="100%" height="48px"
-              style="box-sizing: border-box; display: block;">
-      </iframe>
-    </div>
-    <div class="tradingview-widget-copyright">
-      <a href="https://www.tradingview.com/" target="_blank" rel="noopener nofollow">
-        <span class="blue-text">Track all markets on TradingView</span>
-      </a>
-    </div>
+
+<div class="ticker-wrap">
+  <div class="ticker" id="ticker">
+    <div class="ticker-item"><span class="ticker-symbol">AAPL</span>: $165.32</div>
+    <div class="ticker-item"><span class="ticker-symbol">TSLA</span>: $245.10</div>
+    <div class="ticker-item"><span class="ticker-symbol">NVDA</span>: $785.22</div>
+    <div class="ticker-item"><span class="ticker-symbol">AMZN</span>: $135.44</div>
+    <div class="ticker-item"><span class="ticker-symbol">BTC/USDT</span>: $64,500</div>
+    <div class="ticker-item"><span class="ticker-symbol">ETH/USDT</span>: $3,150</div>
+    <!-- Thêm nữa nếu muốn -->
   </div>
+</div>
+
 </body>
 </html>
